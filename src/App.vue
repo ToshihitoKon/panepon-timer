@@ -1,6 +1,9 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png">
   <Timer />
+  <footer>
+    <a href="https://github.com/ToshihitoKon/panepon-timer">github</a>
+  </footer>
 </template>
 
 <script>
