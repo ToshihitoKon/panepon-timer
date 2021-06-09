@@ -225,10 +225,10 @@ export default {
       }
     },
     toDisplayTime: function(ms) {
-      const msec = Math.floor((ms % 1000) / 10)
-      const sec = Math.floor(ms / 1000)
-      const min = Math.floor(ms / (1000 * 60))
-      return this.zeroPad(min,2) + ':' + this.zeroPad(sec,2) + '.' + this.zeroPadEnd(msec, 2)
+      const min = Math.floor(ms / (1000 * 60)) % 60
+      const sec = Math.floor(ms / 1000) % 60
+      const msec = ms % 1000
+      return this.zeroPad(min,2) + ':' + this.zeroPad(sec,2) + '.' + this.zeroPadEnd(Math.floor(msec / 10), 2)
     },
 
     // utils
