@@ -264,7 +264,7 @@ export default {
     copoyResult: function() {
       const result = document.getElementById('result')
       result.select()
-      document.execCommand('copoy')
+      document.execCommand('copy')
     }
   }
 }
