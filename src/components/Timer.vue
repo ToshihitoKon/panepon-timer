@@ -1,21 +1,31 @@
 <template>
   <div>
-    <h2>{{stateToString()}}</h2>
+    <h1>{{stateToString()}}</h1>
     <h3>{{displayTime}}</h3>
-    <ul>
-      <li
-        v-for="time,index in times"
+    <table>
+      <tr>
+        <th>stage</th>
+        <th>rap time</th>
+        <th>total time</th>
+      </tr>
+      <tr v-for="time,index in times"
         :key="index"
       >
-        stage
-        {{time.stageCount}}
-        {{toDisplayTime(time.time)}}
-      </li>
-    </ul>
+        <td>
+          stage{{time.stageCount}}
+        </td>
+        <td>
+          {{toDisplayTime(time.time)}}
+        </td>
+        <td>
+          {{toDisplayTime(time.checkpointTime)}}
+        </td>
+      </tr>
+    </table>
     <div class="input-group mt-4">
       <textarea v-model="resultText" id="result" class="form-control ignore-press-timer" style="white-space: pre" />
       <div class="input-group-prepend">
-        <button type="button" v-on:click="copyResult" class="btn btn-info ignore-press-timer">結果をｺﾎﾟｲｰ</button>
+        <button type="button" v-on:click="copoyResult" class="btn btn-info ignore-press-timer">結果をｺﾎﾟｲｰ</button>
       </div>
     </div>
   </div>
@@ -48,7 +58,7 @@ export default {
       case 1:
         return 'ready'
       case 25:
-        return 'おつかれ'
+        return this.toDisplayTime(this.times[this.times.length - 1].checkpointTime)
       default:
         return this.toDisplayTime(this.now - this.currentTimerProps.startAt)
       }
@@ -155,9 +165,17 @@ export default {
     rapTimer: function () {
       const times = this.times
       const stageCount = this.stageCount
+
+      const checkpointTime = Date.now() - this.currentTimerProps.startAt
+      var beforeCheckpointTime = 0
+      if (times.length != 0) {
+        beforeCheckpointTime = times[times.length - 1].checkpointTime
+      }
+
       times.push({
-        time: Date.now() - this.currentTimerProps.startAt,
+        time: checkpointTime - beforeCheckpointTime,
         stageCount: stageCount,
+        checkpointTime: checkpointTime,
       })
       this.times = times
       this.stageCount = stageCount + 1
@@ -166,15 +184,9 @@ export default {
       const timer = this.currentTimerProps
       timer.stopAt = Date.now()
       this.currentTimerProps = timer
+      this.rapTimer()
 
-      const times = this.times
-      const stageCount = this.stageCount
-      times.push({
-        time: timer.stopAt - timer.startAt,
-        stageCount: stageCount,
-      })
-      this.times = times
-      this.setResultText()
+     this.setResultText()
     },
 
     // filtersみたいなやつら
@@ -219,7 +231,7 @@ export default {
       case 24: 
         return 'stage 12'
       case 25:
-        return 'timer stop'
+        return 'おつかれ'
       default:
        return 'unknown'
       }
@@ -243,15 +255,16 @@ export default {
       this.times.map((t)=>{
         text += 'stage' +  (t.stageCount) + ': ' + this.timeToResultText(t) + '\n'
       })
+      text += '\n' + 'time: ' +  this.toDisplayTime(this.times[this.times.length-1].checkpointTime) 
       this.resultText = text
     },
     timeToResultText: function(time) {
       return this.toDisplayTime(time.time)
     },
-    copyResult: function() {
+    copoyResult: function() {
       const result = document.getElementById('result')
       result.select()
-      document.execCommand('copy')
+      document.execCommand('copoy')
     }
   }
 }
